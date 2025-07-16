@@ -1,0 +1,14 @@
+请构造一个userInfo，使得json转换能成功
+
+type QUserInfo struct {
+	Nickname    string
+	FigureUrlQQ string `json:"figureurl_qq"`
+}
+
+func LoginSucceed(userInfo, openId string, c *gin.Context) {
+	var qUserInfo QUserInfo
+	//将数据转为结构体
+	if err := json.Unmarshal([]byte(userInfo), &qUserInfo); err != nil {
+		fmt.Println("转换json失败", err.Error())
+		return
+	}
