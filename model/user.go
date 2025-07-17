@@ -2,6 +2,7 @@ package model
 
 import (
 	"clouddisk/model/mysql"
+	"fmt"
 	"time"
 )
 
@@ -24,8 +25,9 @@ func CreateUser(openId, username, image string) {
 		RegisterTime: time.Now(),
 		ImagePath:    image,
 	}
+	//插入记录
 	mysql.DB.Create(&user)
-
+	fmt.Println("插入用户信息成功")
 	fileStore := FileStore{
 		UserId:      user.Id,
 		CurrentSize: 0,
@@ -34,6 +36,7 @@ func CreateUser(openId, username, image string) {
 	mysql.DB.Create(&fileStore)
 
 	user.FileStoreId = fileStore.Id
+	//更新记录
 	mysql.DB.Save(&user)
 }
 

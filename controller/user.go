@@ -35,27 +35,29 @@ func Login(c *gin.Context) {
 // 处理登录
 func HandlerLogin(c *gin.Context) {
 	conf := lib.LoadServerConfig()
-	state := "xxxxxxx"
-	url := "https://graph.qq.com/oauth2.0/authorize?response_type=code&client_id=" + conf.AppId + "&redirect_uri=" + conf.RedirectURI + "&state=" + state
+	//state := "xxxxxxx"
+	//url := "https://graph.qq.com/oauth2.0/authorize?response_type=code&client_id=" + conf.AppId + "&redirect_uri=" + conf.RedirectURI + "&state=" + state
 
 	fmt.Println("访问qq_login，调用HandlerLogin")
-	fmt.Println(url)
+	//fmt.Println(url)
 	//c.Redirect(http.StatusMovedPermanently, url)
 	//http.StatusMovedPermanently 表示常量值 301,永久重定向，浏览器/爬虫会缓存此跳转关系
 	//302（临时重定向，StatusFound）
 	//307（临时重定向且保持方法，StatusTemporaryRedirect）
 	//308（永久重定向且保持方法，StatusPermanentRedirect）
-	c.Redirect(302, conf.RedirectURI)
+	fmt.Println("跳转到：", conf.RedirectURI)
+	//使用 307（临时重定向，不缓存）‌ 或 303（明确要求 GET 方法）‌
+	c.Redirect(307, "http://127.0.0.1:80/callbackQQ")
 }
 
 // 获取access_token
 func GetQQToken(c *gin.Context) {
 	fmt.Println("访问callbackQQ，调用GetQQToken")
 	bs := `{
-		"Nickname": "AI助手",
-		"figureurl_qq": "https://qq.com/123.png"
+		"Nickname": "xielianbin",
+		"figureurl_qq": "https://cloud.tryfastgpt.ai/api/common/file/read/11.jpg"
 	}`
-	LoginSucceed(string(bs), "123456", c)
+	LoginSucceed(string(bs), "123654", c)
 	//conf := lib.LoadServerConfig()
 	//code := c.Query("code")
 
@@ -120,12 +122,13 @@ func GetUserInfo(info *PrivateInfo, c *gin.Context) {
 // 登录成功 处理登录
 func LoginSucceed(userInfo, openId string, c *gin.Context) {
 	var qUserInfo QUserInfo
+	fmt.Println("登录成功！！！")
 	//将数据转为结构体
 	if err := json.Unmarshal([]byte(userInfo), &qUserInfo); err != nil {
 		fmt.Println("转换json失败", err.Error())
 		return
 	}
-	fmt.Println("qUserInfo的用户信息为;", qUserInfo)
+	fmt.Println("用户信息为;", qUserInfo)
 	//创建一个token
 	hashToken := util.EncodeMd5("token" + string(time.Now().Unix()) + openId)
 	//存入redis
@@ -135,10 +138,12 @@ func LoginSucceed(userInfo, openId string, c *gin.Context) {
 		return
 	}
 	//设置cookie
-	c.SetCookie("Token", hashToken, 3600*24, "/", "pyxgo.cn", false, true)
+	// 空域名兼容本地环境
+	c.SetCookie("Token", hashToken, 3600*24, "/", "", false, true)
 	fmt.Println("设置cookie")
 	if ok := model.QueryUserExists(openId); ok { //用户存在直接登录
 		//登录成功重定向到首页
+		//状态码301(Moved Permanently)表示被请求的资源已永久移动到新位置，即永久重定向‌
 		c.Redirect(http.StatusMovedPermanently, "/cloud/index")
 	} else {
 		model.CreateUser(openId, qUserInfo.Nickname, qUserInfo.FigureUrlQQ)

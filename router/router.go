@@ -19,9 +19,9 @@ func SetupRoute() *gin.Engine {
 	cloud := router.Group("cloud")
 	cloud.Use(middleware.CheckLogin)
 	{
-		//	cloud.GET("/index", controller.Index)
+		cloud.GET("/index", controller.Index)
 		//	cloud.GET("/files", controller.Files)
-		//	cloud.GET("/upload", controller.Upload)
+		cloud.GET("/upload", controller.Upload)
 		//	cloud.GET("/doc-files", controller.DocFiles)
 		//	cloud.GET("/image-files", controller.ImageFiles)
 		//	cloud.GET("/video-files", controller.VideoFiles)
@@ -35,7 +35,7 @@ func SetupRoute() *gin.Engine {
 	}
 
 	{
-		//cloud.POST("/uploadFile", controller.HandlerUpload)
+		cloud.POST("/uploadFile", controller.HandlerUpload)
 		//cloud.POST("/addFolder", controller.AddFolder)
 		//cloud.POST("/updateFolder", controller.UpdateFileFolder)
 		//cloud.POST("/getQrCode", controller.ShareFile)

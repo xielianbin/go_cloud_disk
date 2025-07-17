@@ -11,6 +11,8 @@ import (
 // 检查是否登录中间件
 func CheckLogin(c *gin.Context) {
 	token, err := c.Cookie("Token")
+	fmt.Println("登录中间件")
+	//fmt.Println("Token", token)
 	if err != nil {
 		fmt.Println("cookie", err.Error())
 		c.Redirect(http.StatusFound, "/")
@@ -18,6 +20,8 @@ func CheckLogin(c *gin.Context) {
 	}
 
 	openId, err := lib.GetKey(token)
+	fmt.Println("从redis中获取openid：", openId)
+	//fmt.Println("openId", openId)
 	if err != nil {
 		fmt.Println("Get Redis Err:", err.Error())
 		c.Redirect(http.StatusFound, "/")
