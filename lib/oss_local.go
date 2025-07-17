@@ -48,3 +48,17 @@ func Uploadlocal(filename, fileHash string) {
 
 	fmt.Println("文件上传成功:", destPath)
 }
+
+// 从本地下载文件
+func DownloadLocal(fileHash, fileType string) []byte {
+	conf := LoadServerConfig()
+	filePath := filepath.Join(conf.UploadLocation, fileHash+fileType)
+
+	data, err := os.ReadFile(filePath)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return nil
+	}
+
+	return data
+}

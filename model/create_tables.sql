@@ -20,6 +20,17 @@ CREATE TABLE file_folder (
     INDEX idx_file_store_id (file_store_id),
     INDEX idx_parent_folder_id (parent_folder_id)
 );
+-- 共享记录表
+CREATE TABLE share (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    code VARCHAR(64) NOT NULL COMMENT '共享码',
+    file_id INT NOT NULL COMMENT '文件ID',
+    username VARCHAR(50) NOT NULL COMMENT '用户名',
+    hash VARCHAR(128) NOT NULL COMMENT '文件哈希值',
+    INDEX idx_code (code),
+    INDEX idx_username (username),
+    INDEX idx_file_id (file_id)
+);
 -- 文件仓库表
 CREATE TABLE file_store (
     id INT PRIMARY KEY AUTO_INCREMENT,
